@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+
+  mongo:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    networks:
+      - ntnu-course-taking
+    volumes:
+      - ./MongoDB:/data/db
+      - ./user.json:/user.json
+      - ./public_course.json:/public_course.json
+      - ./number.json:/number.json
+      - ./taking_course.json:/taking_course.json
+
+  mongo-express:
+    container_name: mongodb-express
+    image: mongo-express
+    restart: always
+    networks:
+      - server
+      - ntnu-course-taking
+  
+  vue:
+    container_name: vue
+    build: ./Front-End
+    volumes:
+      - ./Front-End:/app
+      - /app/node_modules/
+    networks:
+      - server
+      - ntnu-course-taking
+
+  web:
+    container_name: web
+    build: ./Back-End
+    volumes:
+      - ./Back-End:/app
+    environment:
+      - MONGO_HOST=mongo
+    networks:
+      - server
+      - ntnu-course-taking
+
+  bot:
+    container_name: bot
+    build: ./Course-Taking
+    volumes: 
+      - ./Course-Taking:/app
+    environment:
+      - MONGO_HOST=mongo
+    networks:
+      - ntnu-course-taking
+
+networks:
+  ntnu-course-taking:
+  server:
+    external: true

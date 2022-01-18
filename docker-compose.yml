@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+
+  caddy:
+    container_name: caddy
+    image: abiosoft/caddy
+    environment:
+      - ACME_AGREE=true
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./.config/Caddyfile:/etc/Caddyfile
+      - ./.config/fullchain.pem:/etc/letsencrypt/live/aisu-tw-0911.site/fullchain.pem
+      - ./.config/privkey.pem:/etc/letsencrypt/live/aisu-tw-0911.site/privkey.pem
+
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    volumes:
+      - ./MongoDB:/data/db
+      - ./boolean.json:/boolean.json
+      - ./number.json:/number.json
+      - ./public_course.json:/public_course.json
+      - ./user.json:/user.json
+      - ./taking_course.json:/taking_course.json
+
+  mongodb-express:
+    container_name: mongodb-express
+    image: mongo-express
+    restart: always
+    env_file: 
+      - ./.config/mongo-express.env
+  
+  front-end:
+    container_name: front-end
+    build: ./Front-End
+    volumes:
+      - ./Front-End:/app
+      - /app/node_modules/
+
+  back-end:
+    container_name: back-end
+    build: ./Back-End
+    environment:
+      - MONGO_HOST=mongodb
+    volumes:
+      - ./Back-End:/app
+
+  bot:
+    container_name: bot
+    build: ./Course-Taking
+    environment:
+      - MONGO_HOST=mongodb
+    volumes:
+      - ./Course-Taking:/app
