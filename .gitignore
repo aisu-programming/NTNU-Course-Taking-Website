@@ -9,11 +9,11 @@ MongoDB
 .vscode
 
 # json files
-boolean\ (20*).json
-number\ (20*).json
-public_course\ (20*).json
-taking_course\ (20*).json
-user\ (20*).json
+# boolean\ (20*).json
+# number\ (20*).json
+# public_course\ (20*).json
+# taking_course\ (20*).json
+user.json
 
 # Misc
 *.pyc
